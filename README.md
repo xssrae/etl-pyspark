@@ -1,38 +1,43 @@
 # Desafio de Engenharia de Dados - ETL Pipeline com PySpark
 
-Este projeto implementa um pipeline ETL (Extract, Transform, Load) completo para processamento de dados de vendas e clientes. O sistema ingere dados de fontes heterogêneas (CSV e TXT Posicional), realiza limpeza, enriquecimento e entrega insights de negócios e dados particionados para Data Lake.
+Este projeto implementa um pipeline ETL (Extract, Transform, Load) robusto utilizando PySpark para processamento de dados de vendas e clientes. O sistema ingere dados de fontes heterogêneas, realiza limpeza, aplica regras de negócio complexas e entrega dados estruturados prontos para análise (Data Lake).
 
 ## 🚀 Funcionalidades
 
 * **Ingestão de Dados:**
-    * Leitura de `clientes.csv` (Schema Inferred).
-    * Parsing manual de `vendas.txt` (formato Fixed-Width/Posicional).
-* **Transformação:**
-    * Tratamento de tipos de dados (Inteiros, Decimais, Datas).
-    * Enriquecimento: Cálculo de Idade e categorização por Faixa Etária.
-    * Joins entre dados transacionais e dimensionais.
-* **Particionamento (Diferencial):**
-    * Output organizado em pastas por data (`data_venda=YYYY-MM-DD`), simulando estrutura de Data Lake.
+    * Leitura de CSV com inferência de schema (`clientes.csv`).
+    * Leitura e parsing manual de arquivos de texto posicional/Fixed-Width (`vendas.txt`).
+* **Transformação & Data Quality:**
+    * Tratamento de tipos de dados (Inteiros, Decimais com ajuste de escala, Datas).
+    * Enriquecimento de dados (Cálculo de idade e categorização de faixa etária).
+    * Cruzamento de dados (Joins) entre transações e dimensões.
+* **Particionamento (Data Lake):**
+    * Output detalhado organizado em diretórios particionados por data (`data_venda=YYYY-MM-DD`), otimizando consultas futuras.
 * **Analytics:**
-    * Balanço financeiro por produto.
-    * Análise de comportamento de compra por faixa etária.
-    * Ranking de melhores clientes.
+    * Geração de KPIs financeiros por produto e cliente.
+    * Insights sobre ticket médio e comportamento demográfico.
 
 ## 🛠️ Tecnologias Utilizadas
 
-* **Python 3.14**
-* **PySpark** (Processamento distribuído)
-* **Bibliotecas Standard:** `csv`, `os`, `random` (para geração de massa de dados e persistência local sem dependência de Hadoop/Winutils).
+* **Linguagem:** Python 3.x
+* **Motor de Processamento:** PySpark (Apache Spark)
+* **Bibliotecas Auxiliares:** `csv`, `os`, `shutil`, `unittest` (Testes), `random` (Mock Data).
+* **Ambiente:** Executável localmente (Windows/Linux/Mac) sem dependência de instalação completa do Hadoop (Winutils bypass).
+
+---
 
 ## 📂 Estrutura do Projeto
 
 ```text
-├── dados/                  # Arquivos de entrada (Gerados via script)
-├── output/                 # Saída do Pipeline
-│   ├── insights/           # Relatórios gerenciais (CSV)
-│   ├── balanco_produtos.csv
-│   └── vendas_detalhadas/  # Data Lake Particionado por Data
-├── etl_pipeline.py         # Script Principal
-├── gerar_dados.py          # Gerador de Clientes
-├── gerar_vendas_massivo.py # Gerador de Vendas (Volume)
-└── README.md
+├── dados/                  # Diretório de entrada (Gerado automaticamente)
+│   ├── clientes.csv        # Cadastro de clientes
+│   └── vendas.txt          # Arquivo posicional legado
+├── output/                 # Diretório de saída
+│   ├── resumo_clientes.csv # KPI consolidado por cliente
+│   ├── balanco_produtos.csv# KPI consolidado por produto
+│   └── vendas_detalhadas/  # Dataset particionado (Data Lake)
+├── etl_pipeline.py         # Código principal do Pipeline
+├── gerar_dados.py          # Script para gerar clientes fake
+├── gerar_vendas_massivo.py # Script para gerar volume de vendas fake
+├── test_etl.py             # Testes Automatizados (Unitários)
+└── README.md               # Documentação
