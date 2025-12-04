@@ -1,3 +1,4 @@
+import shutil
 import sys
 import os
 import csv
@@ -58,7 +59,7 @@ def gerar_balanco_produtos(vendas):
     balanco = balanco.withColumn("ticket_medio_produto", F.round("ticket_medio_produto", 2))
     return balanco
 
-def salvar_output(df, caminho_arquivo):
+def salvar_output_simples(df, caminho_arquivo):
     try:
         pasta = os.path.dirname(caminho_arquivo)
         if not os.path.exists(pasta):
@@ -78,6 +79,48 @@ def salvar_output(df, caminho_arquivo):
         print(f"Erro ao salvar arquivo {caminho_arquivo}: {e}")
         raise
 
+def salvar_particionamento(df, pasta_raiz):  # Salva o DataFrame particionado por 'data_venda' (Opicional)
+
+    print(f"Salvando arquivos particionados em: {pasta_raiz}...")
+
+    if os.path.exists(pasta_raiz):
+        shutil.rmtree(pasta_raiz)
+
+    linhas = df.collect()
+    colunas = df.columns
+
+    try:
+        idx_data = colunas.index('data_venda')
+    except ValueError:
+        print("Coluna 'data_venda' não encontrada para particionamento.")
+        return
+    
+    buffer_particao = {}
+    
+    for linha in linhas:
+        val_data = linha[idx_data]
+        data_str = str(val_data) 
+        
+        if data_str not in buffer_particao:
+            buffer_particao[data_str] = []
+        buffer_particao[data_str].append(linha)
+    
+    count_pastas = 0
+    for data, dados_dia in buffer_particao.items():
+        pasta_particao = os.path.join(pasta_raiz, f"data_venda={data}")
+        os.makedirs(pasta_particao, exist_ok=True)
+        
+        arquivo_final = os.path.join(pasta_particao, "dados.csv")
+        
+        with open(arquivo_final, mode='w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow(colunas)
+            writer.writerows(dados_dia)
+        
+        count_pastas += 1
+
+    print(f"Particionamento concluído! Dados salvos em {count_pastas} pastas dentro de '{pasta_raiz}'.")
+
 def main():
     spark = iniciar_spark_session()
     
@@ -86,6 +129,7 @@ def main():
     
     path_output_clientes = "output/resumo_clientes.csv"
     path_output_produtos = "output/balanco_produtos.csv"
+    path_output_particionado = "output/vendas_detalhadas"
 
     print("--- Iniciando Pipeline ETL ---")
 
@@ -100,10 +144,15 @@ def main():
         print("Gerando balanço por produtos...")
         balanco_produtos = gerar_balanco_produtos(vendas)
 
+        print("3. Preparando dataset detalhado para Data Lake...")
+        df_completo = vendas.join(clientes, on="cliente_id", how="inner")
+
         print("Salvando resultados...")
         
-        salvar_output(resumo_clientes, path_output_clientes)
-        salvar_output(balanco_produtos, path_output_produtos)
+        salvar_output_simples(resumo_clientes, path_output_clientes)
+        salvar_output_simples(balanco_produtos, path_output_produtos)
+        
+        salvar_particionamento(df_completo, path_output_particionado)
 
         print("--- Pipeline concluído com sucesso! ---")
         print(f"Arquivos gerados na pasta 'output/'.")
