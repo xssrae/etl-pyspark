@@ -3,7 +3,6 @@ __pycache__/
 .vscode/
 .idea/
 output/
-dados/
 *.csv
 *.parquet
 *.xlsx
