@@ -39,7 +39,6 @@ Este projeto implementa um pipeline ETL (Extract, Transform, Load) utilizando Py
 │   ├── balanco_produtos.csv# KPI consolidado por produto
 │   └── vendas_detalhadas/  # Dataset particionado (Data Lake)
 ├── etl_pipeline.py         # Código principal do Pipeline
-├── gerar_dados.py          # Script para gerar clientes fake
 ├── gerar_vendas_massivo.py # Script para gerar volume de vendas fake
 ├── test_etl.py             # Testes Automatizados (Unitários)
 └── README.md               # Documentação
@@ -64,10 +63,7 @@ pip install pyspark pandas matplotlib
 Como os arquivos de dados brutos não são versionados, você deve executar os scripts geradores para criar a pasta `dados/` com informações simuladas:
 
 ```bash
-# 1. Gera o cadastro de clientes
-python gerar_dados.py
-
-# 2. Gera 50.000 registros de vendas (com simulação de churn/inatividade)
+# Gera 50.000 registros de vendas (com simulação de churn/inatividade)
 python gerar_vendas_massivo.py
 ```
 
