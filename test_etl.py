@@ -39,7 +39,7 @@ class TestETLPipeline(unittest.TestCase):
         
         self.assertEqual(resultado["venda_id"], 1)
         self.assertEqual(resultado["cliente_id"], 1)
-        self.assertEqual(resultado["valor"], 20.00) # 00002000 / 100
+        self.assertEqual(resultado["valor"], 20.00)
 
     def test_calculo_resumo(self):
         """Testa se o Join e a agregação de totais estão corretos"""
