@@ -2,6 +2,8 @@
 
 Este projeto implementa um pipeline ETL (Extract, Transform, Load) utilizando PySpark para integrar dados de clientes e vendas, gerar resumos por cliente e relatórios financeiros por produto. O sistema ingere dados de fontes heterogêneas, realiza limpeza, aplica regras de negócio complexas e entrega dados estruturados prontos para análise (Data Lake).
 
+![etl](https://github.com/xssrae/etl-pyspark/blob/main/img/etl.jpeg)
+
 ## 🚀 Funcionalidades
 
 * **Ingestão de Dados:**
